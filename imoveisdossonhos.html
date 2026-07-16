@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>seu imóvel dos sonhos</title>
+
+    <style>
+        /* ======= ESTILO GERAL ======= */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#d6e6ff;
+            padding:1px;
+        }
+
+        .estilo{
+            background:#719ef1;
+            padding:20px;
+            text-align:center;
+            border-radius:2px;
+            margin:0;
+            width:100%;
+        }
+
+        .estilo h3{
+            color:white;
+        }
+
+        h3{
+            text-align:center;
+            color:#0d6efd;
+            margin-bottom:20px;
+        }
+
+        /* ======= FORMULÁRIO ======= */
+        input{
+            width:100%;
+            padding:12px;
+            margin:8px 0;
+            border:1px solid #cfdcf7;
+            border-radius:8px;
+            font-size:16px;
+        }
+
+        input:focus{
+            outline:none;
+            border:1px solid #0d6efd;
+        }
+
+        label{
+            font-size:13px;
+            color:#555;
+            display:block;
+            margin-top:6px;
+        }
+
+        /* ======= BOTÕES ======= */
+        button{
+            background:#0d6efd;
+            color:white;
+            border:none;
+            padding:12px 20px;
+            border-radius:8px;
+            cursor:pointer;
+            margin-top:10px;
+            transition:.3s;
+        }
+
+        button:hover{
+            background:#084298;
+        }
+
+        button.secundario{
+            background:#6c757d;
+        }
+        button.secundario:hover{
+            background:#495057;
+        }
+
+        button.link-simples{
+            background:none;
+            color:#0d6efd;
+            padding:4px;
+            text-decoration:underline;
+            margin-top:4px;
+        }
+        button.link-simples:hover{
+            background:none;
+            color:#084298;
+        }
+
+        /* ======= CAIXAS / PAINÉIS ======= */
+        .caixa{
+            max-width:420px;
+            margin:20px auto;
+            background:white;
+            padding:20px;
+            border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,.1);
+        }
+
+        .aviso{
+            background:#fff3cd;
+            border:1px solid #ffe69c;
+            color:#664d03;
+            padding:10px;
+            border-radius:8px;
+            font-size:13px;
+            margin-top:10px;
+        }
+
+        .erro{
+            background:#f8d7da;
+            border:1px solid #f1aeb5;
+            color:#842029;
+            padding:10px;
+            border-radius:8px;
+            font-size:14px;
+            margin-top:10px;
+        }
+
+        .codigo-demo{
+            background:#e7f1ff;
+            border:2px dashed #0d6efd;
+            color:#084298;
+            padding:14px;
+            border-radius:8px;
+            text-align:center;
+            font-size:22px;
+            font-weight:bold;
+            letter-spacing:4px;
+            margin-top:10px;
+        }
+
+        /* ======= LISTA ======= */
+        #lista{
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:20px;
+            margin-top:30px;
+            padding-bottom:30px;
+        }
+
+        /* ======= CARD ======= */
+        .card{
+            width:300px;
+            background:white;
+            border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,.15);
+            overflow:hidden;
+            transition:.3s;
+            padding:15px;
+        }
+
+        .card:hover{
+            transform:translateY(-5px);
+        }
+
+        .card img{
+            width:100%;
+            height:200px;
+            object-fit:cover;
+            border-radius:10px;
+        }
+
+        .card h3{
+            margin-top:15px;
+            color:#0d6efd;
+        }
+
+        .card p{
+            margin-top:8px;
+            color:#444;
+            font-size:15px;
+        }
+
+        .card button{
+            width:100%;
+            margin-top:15px;
+        }
+
+        .topo-acoes{
+            text-align:center;
+            padding:10px;
+        }
+
+        /* ======= RESPONSIVO ======= */
+        @media(max-width:700px){
+            .card{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="estilo">
+        <h3>imóvel dos sonhos</h3>
+    </div>
+
+    <div class="topo-acoes" id="topoAcoes">
+        <button id="btnAdminCorretor" onclick="alternarLogin()">Login administrador</button>
+    </div>
+
+    <!-- ================= CADASTRO INICIAL DO ADMIN (só aparece se nenhum admin existir) ================= -->
+    <div id="cadastroInicial" class="caixa" style="display:none">
+        <h3>Criar conta de administrador</h3>
+        <p class="aviso">Nenhum administrador foi configurado ainda. Crie o primeiro acesso abaixo.</p>
+
+        <input type="text" id="novoUsuarioInicial" placeholder="Usuário">
+        <input type="email" id="novoEmailInicial" placeholder="E-mail">
+        <input type="password" id="novaSenhaInicial" placeholder="Senha (mínimo 8 caracteres)">
+        <input type="password" id="novaSenhaInicialConfirma" placeholder="Confirmar senha">
+
+        <div id="erroCadastroInicial"></div>
+
+        <button onclick="criarAdminInicial()">Criar administrador</button>
+    </div>
+
+    <!-- ================= LOGIN ================= -->
+    <div id="login" class="caixa" style="display:none">
+        <h3>Área do corretor</h3>
+
+        <input type="text" id="usuario" placeholder="Usuário">
+        <input type="password" id="senha" placeholder="Senha">
+
+        <div id="erroLogin"></div>
+
+        <button onclick="login()">Entrar como administrador</button>
+        <br>
+        <button class="link-simples" onclick="abrirRecuperacao()">Esqueci minha senha</button>
+        <br>
+        <button class="secundario" onclick="visitante()">Continuar como visitante</button>
+    </div>
+
+    <!-- ================= RECUPERAÇÃO DE SENHA ================= -->
+    <div id="recuperacao" class="caixa" style="display:none">
+        <h3>Recuperar acesso</h3>
+        <p class="aviso">
+            Este site roda só no seu navegador, sem servidor próprio, então ele não consegue enviar
+            e-mails de verdade. Abaixo o código aparece na tela para você testar o fluxo. Para enviar
+            o código por e-mail de verdade, seria preciso ligar isso a um serviço de e-mail (ex.: EmailJS
+            ou um backend com SendGrid/SES).
+        </p>
+
+        <div id="etapaEmailRecuperacao">
+            <input type="email" id="emailRecuperacao" placeholder="Digite o e-mail cadastrado do administrador">
+            <div id="erroRecuperacaoEmail"></div>
+            <button onclick="solicitarCodigo()">Gerar código de verificação</button>
+        </div>
+
+        <div id="etapaCodigoRecuperacao" style="display:none">
+            <div class="codigo-demo" id="codigoGerado"></div>
+            <label>Digite o código acima para confirmar que você tem acesso a este e-mail</label>
+            <input type="text" id="codigoDigitado" placeholder="Código de 6 dígitos">
+            <div id="erroCodigo"></div>
+            <button onclick="confirmarCodigo()">Confirmar código</button>
+        </div>
+
+        <div id="etapaNovaSenha" style="display:none">
+            <p class="aviso">Código confirmado. Defina os novos dados de acesso.</p>
+            <input type="text" id="novoUsuarioRecuperacao" placeholder="Novo usuário">
+            <input type="email" id="novoEmailRecuperacao" placeholder="Novo e-mail">
+            <input type="password" id="novaSenhaRecuperacao" placeholder="Nova senha (mínimo 8 caracteres)">
+            <input type="password" id="novaSenhaRecuperacaoConfirma" placeholder="Confirmar nova senha">
+            <div id="erroNovaSenha"></div>
+            <button onclick="redefinirCredenciais()">Salvar novas credenciais</button>
+        </div>
+
+        <button class="secundario" onclick="fecharRecuperacao()">Cancelar</button>
+    </div>
+
+    <!-- ================= PAINEL ADMIN ================= -->
+    <div id="painelAdmin" class="caixa" style="display:none;max-width:600px;">
+
+        <button onclick="sair()">Sair</button>
+        <button class="secundario" onclick="abrirTrocaCredenciais()">Alterar usuário / e-mail / senha</button>
+
+        <br><br>
+
+        <input type="text" id="titulo" placeholder="Título">
+        <input type="text" id="Descricao" placeholder="Descrição">
+        <input type="number" id="preco" placeholder="Preço">
+        <input type="text" id="comados" placeholder="Quantidade de cômodos">
+        <input type="number" id="construcao_metragem" placeholder="Construção (m²)">
+        <input type="number" id="Terreno_metragem" placeholder="Terreno (m²)">
+        <input type="text" id="whatsapp" placeholder="WhatsApp do vendedor (só números, com DDD)">
+        <input type="file" id="imagem" accept="image/*">
+
+        <button onclick="cadastrar()">Salvar</button>
+    </div>
+
+    <!-- ================= TROCA DE CREDENCIAIS (já logado) ================= -->
+    <div id="trocaCredenciais" class="caixa" style="display:none">
+        <h3>Alterar dados de acesso</h3>
+        <input type="password" id="senhaAtualConfirma" placeholder="Confirme sua senha atual">
+        <input type="text" id="usuarioNovo" placeholder="Novo usuário (opcional)">
+        <input type="email" id="emailNovo" placeholder="Novo e-mail (opcional)">
+        <input type="password" id="senhaNova" placeholder="Nova senha (opcional, mín. 8 caracteres)">
+        <input type="password" id="senhaNovaConfirma" placeholder="Confirmar nova senha">
+        <div id="erroTroca"></div>
+        <button onclick="salvarTrocaCredenciais()">Salvar alterações</button>
+        <button class="secundario" onclick="fecharTrocaCredenciais()">Cancelar</button>
+    </div>
+
+    <!-- ================= PAINEL VISITANTE ================= -->
+    <div id="painelVisitante" class="topo-acoes" style="display:none;">
+        <button onclick="sair()">Voltar ao login</button>
+    </div>
+
+    <hr>
+
+    <div id="lista"></div>
+
+    <script>
+        /* =========================================================
+           CONFIGURAÇÃO DE SEGURANÇA
+           - As senhas nunca são salvas em texto puro: guardamos só
+             o hash (SHA-256) gerado no navegador via SubtleCrypto.
+           - Existe um bloqueio temporário após várias tentativas
+             erradas de login (proteção simples contra força bruta).
+           - A "recuperação por e-mail" é simulada: sem um backend
+             não é possível enviar e-mails de verdade a partir de um
+             site puramente estático. O código aparece na tela com
+             aviso claro disso.
+           ========================================================= */
+
+        const MAX_TENTATIVAS = 5;
+        const BLOQUEIO_MS = 60 * 1000; // 1 minuto
+        const VALIDADE_CODIGO_MS = 10 * 60 * 1000; // 10 minutos
+        const SESSAO_INATIVIDADE_MS = 15 * 60 * 1000; // 15 minutos
+
+        let administrador = false;
+        let indiceEditando = -1;
+        let codigoRecuperacaoAtivo = null; // { codigo, expira, email }
+        let timerInatividade = null;
+
+        const imoveis = JSON.parse(localStorage.getItem("imoveis")) || [];
+
+        function escapeHTML(texto){
+            const div = document.createElement("div");
+            div.textContent = texto ?? "";
+            return div.innerHTML;
+        }
+
+        async function gerarHash(texto){
+            const encoder = new TextEncoder();
+            const dados = encoder.encode(texto);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", dados);
+            return Array.from(new Uint8Array(hashBuffer))
+                .map(b => b.toString(16).padStart(2, "0"))
+                .join("");
+        }
+
+        function lerAdmin(){
+            return JSON.parse(localStorage.getItem("admin")) || null;
+        }
+
+        function salvarAdmin(dados){
+            localStorage.setItem("admin", JSON.stringify(dados));
+        }
+
+        function lerTentativas(){
+            return JSON.parse(localStorage.getItem("tentativasLogin")) || { count: 0, bloqueadoAte: 0 };
+        }
+
+        function salvarTentativas(t){
+            localStorage.setItem("tentativasLogin", JSON.stringify(t));
+        }
+
+        function gerarCodigoNumerico(){
+            return String(Math.floor(100000 + Math.random() * 900000));
+        }
+
+        /* ================= TELA INICIAL ================= */
+
+        function iniciarTela(){
+            const admin = lerAdmin();
+            if(!admin){
+                document.getElementById("topoAcoes").style.display = "none";
+                document.getElementById("cadastroInicial").style.display = "block";
+            }
+        }
+
+        async function criarAdminInicial(){
+            const usuario = document.getElementById("novoUsuarioInicial").value.trim();
+            const email = document.getElementById("novoEmailInicial").value.trim();
+            const senha = document.getElementById("novaSenhaInicial").value;
+            const confirma = document.getElementById("novaSenhaInicialConfirma").value;
+            const erro = document.getElementById("erroCadastroInicial");
+            erro.innerHTML = "";
+
+            if(!usuario || !email || !senha){
+                erro.innerHTML = `<div class="erro">Preencha todos os campos.</div>`;
+                return;
+            }
+            if(senha.length < 8){
+                erro.innerHTML = `<div class="erro">A senha precisa ter pelo menos 8 caracteres.</div>`;
+                return;
+            }
+            if(senha !== confirma){
+                erro.innerHTML = `<div class="erro">As senhas não coincidem.</div>`;
+                return;
+            }
+
+            const senhaHash = await gerarHash(senha);
+            salvarAdmin({ usuario, email, senhaHash });
+
+            document.getElementById("cadastroInicial").style.display = "none";
+            document.getElementById("topoAcoes").style.display = "block";
+            alert("Administrador criado com sucesso. Já pode fazer login.");
+        }
+
+        /* ================= LOGIN / LOGOUT ================= */
+
+        function alternarLogin(){
+            const login = document.getElementById("login");
+            login.style.display = (login.style.display === "none" || login.style.display === "") ? "block" : "none";
+        }
+
+        async function login(){
+            const erro = document.getElementById("erroLogin");
+            erro.innerHTML = "";
+
+            const tentativas = lerTentativas();
+            const agora = Date.now();
+
+            if(tentativas.bloqueadoAte && agora < tentativas.bloqueadoAte){
+                const segundos = Math.ceil((tentativas.bloqueadoAte - agora) / 1000);
+                erro.innerHTML = `<div class="erro">Muitas tentativas erradas. Tente novamente em ${segundos}s.</div>`;
+                return;
+            }
+
+            const usuario = document.getElementById("usuario").value.trim();
+            const senha = document.getElementById("senha").value;
+            const admin = lerAdmin();
+
+            if(!admin){
+                erro.innerHTML = `<div class="erro">Nenhum administrador configurado.</div>`;
+                return;
+            }
+
+            const senhaHash = await gerarHash(senha);
+
+            if(usuario === admin.usuario && senhaHash === admin.senhaHash){
+
+                salvarTentativas({ count: 0, bloqueadoAte: 0 });
+
+                administrador = true;
+
+                document.getElementById("usuario").value = "";
+                document.getElementById("senha").value = "";
+                document.getElementById("login").style.display = "none";
+                document.getElementById("topoAcoes").style.display = "none";
+                document.getElementById("painelAdmin").style.display = "block";
+                document.getElementById("painelVisitante").style.display = "none";
+
+                iniciarSessao();
+                mostrar();
+
+            }else{
+
+                const novaContagem = tentativas.count + 1;
+                if(novaContagem >= MAX_TENTATIVAS){
+                    salvarTentativas({ count: 0, bloqueadoAte: agora + BLOQUEIO_MS });
+                    erro.innerHTML = `<div class="erro">Muitas tentativas erradas. Login bloqueado por ${BLOQUEIO_MS/1000}s.</div>`;
+                }else{
+                    salvarTentativas({ count: novaContagem, bloqueadoAte: 0 });
+                    erro.innerHTML = `<div class="erro">Usuário ou senha incorretos. Tentativa ${novaContagem} de ${MAX_TENTATIVAS}.</div>`;
+                }
+
+            }
+        }
+
+        function iniciarSessao(){
+            resetarTimerInatividade();
+            ["click","keydown","mousemove"].forEach(evt =>
+                document.addEventListener(evt, resetarTimerInatividade)
+            );
+        }
+
+        function resetarTimerInatividade(){
+            if(!administrador) return;
+            clearTimeout(timerInatividade);
+            timerInatividade = setTimeout(() => {
+                alert("Sessão encerrada por inatividade.");
+                sair();
+            }, SESSAO_INATIVIDADE_MS);
+        }
+
+        function visitante(){
+            administrador = false;
+
+            document.getElementById("login").style.display = "none";
+            document.getElementById("topoAcoes").style.display = "none";
+            document.getElementById("painelAdmin").style.display = "none";
+            document.getElementById("painelVisitante").style.display = "block";
+
+            mostrar();
+        }
+
+        function sair(){
+            administrador = false;
+            clearTimeout(timerInatividade);
+
+            document.getElementById("login").style.display = "none";
+            document.getElementById("topoAcoes").style.display = "block";
+            document.getElementById("painelAdmin").style.display = "none";
+            document.getElementById("painelVisitante").style.display = "none";
+            document.getElementById("trocaCredenciais").style.display = "none";
+
+            mostrar();
+        }
+
+        /* ================= RECUPERAÇÃO DE SENHA (sem sessão) ================= */
+
+        function abrirRecuperacao(){
+            document.getElementById("login").style.display = "none";
+            document.getElementById("recuperacao").style.display = "block";
+            document.getElementById("etapaEmailRecuperacao").style.display = "block";
+            document.getElementById("etapaCodigoRecuperacao").style.display = "none";
+            document.getElementById("etapaNovaSenha").style.display = "none";
+        }
+
+        function fecharRecuperacao(){
+            codigoRecuperacaoAtivo = null;
+            document.getElementById("recuperacao").style.display = "none";
+            document.getElementById("login").style.display = "block";
+        }
+
+        function solicitarCodigo(){
+            const erro = document.getElementById("erroRecuperacaoEmail");
+            erro.innerHTML = "";
+
+            const emailDigitado = document.getElementById("emailRecuperacao").value.trim();
+            const admin = lerAdmin();
+
+            if(!admin || emailDigitado.toLowerCase() !== admin.email.toLowerCase()){
+                erro.innerHTML = `<div class="erro">E-mail não corresponde ao administrador cadastrado.</div>`;
+                return;
+            }
+
+            const codigo = gerarCodigoNumerico();
+            codigoRecuperacaoAtivo = { codigo, expira: Date.now() + VALIDADE_CODIGO_MS, email: emailDigitado };
+
+            document.getElementById("codigoGerado").textContent = codigo;
+            document.getElementById("etapaEmailRecuperacao").style.display = "none";
+            document.getElementById("etapaCodigoRecuperacao").style.display = "block";
+        }
+
+        function confirmarCodigo(){
+            const erro = document.getElementById("erroCodigo");
+            erro.innerHTML = "";
+
+            if(!codigoRecuperacaoAtivo || Date.now() > codigoRecuperacaoAtivo.expira){
+                erro.innerHTML = `<div class="erro">Código expirado. Solicite um novo.</div>`;
+                return;
+            }
+
+            const digitado = document.getElementById("codigoDigitado").value.trim();
+            if(digitado !== codigoRecuperacaoAtivo.codigo){
+                erro.innerHTML = `<div class="erro">Código incorreto.</div>`;
+                return;
+            }
+
+            document.getElementById("etapaCodigoRecuperacao").style.display = "none";
+            document.getElementById("etapaNovaSenha").style.display = "block";
+        }
+
+        async function redefinirCredenciais(){
+            const erro = document.getElementById("erroNovaSenha");
+            erro.innerHTML = "";
+
+            const admin = lerAdmin();
+            const novoUsuario = document.getElementById("novoUsuarioRecuperacao").value.trim() || admin.usuario;
+            const novoEmail = document.getElementById("novoEmailRecuperacao").value.trim() || admin.email;
+            const novaSenha = document.getElementById("novaSenhaRecuperacao").value;
+            const confirma = document.getElementById("novaSenhaRecuperacaoConfirma").value;
+
+            if(!novaSenha || novaSenha.length < 8){
+                erro.innerHTML = `<div class="erro">A nova senha precisa ter pelo menos 8 caracteres.</div>`;
+                return;
+            }
+            if(novaSenha !== confirma){
+                erro.innerHTML = `<div class="erro">As senhas não coincidem.</div>`;
+                return;
+            }
+
+            const senhaHash = await gerarHash(novaSenha);
+            salvarAdmin({ usuario: novoUsuario, email: novoEmail, senhaHash });
+            salvarTentativas({ count: 0, bloqueadoAte: 0 });
+
+            codigoRecuperacaoAtivo = null;
+            document.getElementById("recuperacao").style.display = "none";
+            document.getElementById("login").style.display = "block";
+            alert("Credenciais atualizadas. Faça login com os novos dados.");
+        }
+
+        /* ================= TROCA DE CREDENCIAIS (já logado) ================= */
+
+        function abrirTrocaCredenciais(){
+            document.getElementById("painelAdmin").style.display = "none";
+            document.getElementById("trocaCredenciais").style.display = "block";
+        }
+
+        function fecharTrocaCredenciais(){
+            document.getElementById("trocaCredenciais").style.display = "none";
+            document.getElementById("painelAdmin").style.display = "block";
+            ["senhaAtualConfirma","usuarioNovo","emailNovo","senhaNova","senhaNovaConfirma"].forEach(id => {
+                document.getElementById(id).value = "";
+            });
+        }
+
+        async function salvarTrocaCredenciais(){
+            const erro = document.getElementById("erroTroca");
+            erro.innerHTML = "";
+
+            const admin = lerAdmin();
+            const senhaAtual = document.getElementById("senhaAtualConfirma").value;
+            const senhaAtualHash = await gerarHash(senhaAtual);
+
+            if(senhaAtualHash !== admin.senhaHash){
+                erro.innerHTML = `<div class="erro">Senha atual incorreta.</div>`;
+                return;
+            }
+
+            const novoUsuario = document.getElementById("usuarioNovo").value.trim() || admin.usuario;
+            const novoEmail = document.getElementById("emailNovo").value.trim() || admin.email;
+            const novaSenha = document.getElementById("senhaNova").value;
+            const novaSenhaConfirma = document.getElementById("senhaNovaConfirma").value;
+
+            let senhaHashFinal = admin.senhaHash;
+
+            if(novaSenha){
+                if(novaSenha.length < 8){
+                    erro.innerHTML = `<div class="erro">A nova senha precisa ter pelo menos 8 caracteres.</div>`;
+                    return;
+                }
+                if(novaSenha !== novaSenhaConfirma){
+                    erro.innerHTML = `<div class="erro">As senhas novas não coincidem.</div>`;
+                    return;
+                }
+                senhaHashFinal = await gerarHash(novaSenha);
+            }
+
+            salvarAdmin({ usuario: novoUsuario, email: novoEmail, senhaHash: senhaHashFinal });
+            alert("Dados de acesso atualizados com sucesso.");
+            fecharTrocaCredenciais();
+        }
+
+        /* ================= CADASTRO DE IMÓVEIS ================= */
+
+        function cadastrar(){
+
+            const titulo = document.getElementById("titulo").value;
+            const descricao = document.getElementById("Descricao").value;
+            const preco = document.getElementById("preco").value;
+            const comados = document.getElementById("comados").value;
+            const construcao = document.getElementById("construcao_metragem").value;
+            const terreno = document.getElementById("Terreno_metragem").value;
+            const whatsapp = document.getElementById("whatsapp").value;
+            const arquivo = document.getElementById("imagem").files[0];
+
+            if(arquivo){
+                const leitor = new FileReader();
+                leitor.onload = function(){
+                    salvar(leitor.result);
+                };
+                leitor.readAsDataURL(arquivo);
+            }else{
+                let imagem = "";
+                if(indiceEditando != -1){
+                    imagem = imoveis[indiceEditando].imagem;
+                }
+                salvar(imagem);
+            }
+
+            function salvar(imagem){
+                const imovel = { titulo, descricao, preco, comados, construcao, terreno, imagem, whatsapp };
+
+                if(indiceEditando == -1){
+                    imoveis.push(imovel);
+                }else{
+                    imoveis[indiceEditando] = imovel;
+                    indiceEditando = -1;
+                }
+
+                localStorage.setItem("imoveis", JSON.stringify(imoveis));
+
+                ["titulo","Descricao","preco","comados","construcao_metragem","Terreno_metragem","imagem","whatsapp"]
+                    .forEach(id => document.getElementById(id).value = "");
+
+                mostrar();
+            }
+        }
+
+        function mostrar(){
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            imoveis.forEach(function(imovel, indice){
+
+                lista.innerHTML += `
+                <div class="card">
+                    ${imovel.imagem ? `<img src="${imovel.imagem}" width="250">` : ""}
+                    <h3>${escapeHTML(imovel.titulo)}</h3>
+                    <p>${escapeHTML(imovel.descricao)}</p>
+                    <p><b>Preço:</b> R$ ${escapeHTML(imovel.preco)}</p>
+                    <p><b>Cômodos:</b> ${escapeHTML(imovel.comados)}</p>
+                    <p><b>Construção:</b> ${escapeHTML(imovel.construcao)} m²</p>
+                    <p><b>Terreno:</b> ${escapeHTML(imovel.terreno)} m²</p>
+                    ${
+                        administrador
+                        ? `
+                        <button onclick="editar(${indice})">Editar</button>
+                        <button onclick="excluir(${indice})">Excluir</button>
+                        `
+                        : `
+                        <button onclick="contato(${indice})">Conversar com vendedor</button>
+                        <div id="area_contato_${indice}" style="display:none;"></div>
+                        `
+                    }
+                </div>
+                `;
+            });
+        }
+
+        function contato(indice){
+            const area = document.getElementById("area_contato_" + indice);
+
+            area.innerHTML = `
+                <input type="text" id="nome_visitante_${indice}" placeholder="Seu nome">
+                <input type="text" id="telefone_visitante_${indice}" placeholder="Seu telefone">
+                <input type="text" id="email_visitante_${indice}" placeholder="Seu email">
+                <button onclick="enviarContato(${indice})">Enviar</button>
+            `;
+
+            area.style.display = "block";
+        }
+
+        function enviarContato(indice){
+            const imovel = imoveis[indice];
+
+            const nome = document.getElementById("nome_visitante_" + indice).value;
+            const telefone = document.getElementById("telefone_visitante_" + indice).value;
+            const email = document.getElementById("email_visitante_" + indice).value;
+
+            const mensagem = "Olá, meu nome é " + nome +
+                              ". Telefone: " + telefone +
+                              ". Email: " + email +
+                              ". Tenho interesse no imóvel: " + imovel.titulo;
+
+            const link = "https://wa.me/" + imovel.whatsapp + "?text=" + encodeURIComponent(mensagem);
+            window.open(link, "_blank");
+        }
+
+        function editar(indice){
+            indiceEditando = indice;
+            const imovel = imoveis[indice];
+
+            document.getElementById("titulo").value = imovel.titulo;
+            document.getElementById("Descricao").value = imovel.descricao;
+            document.getElementById("preco").value = imovel.preco;
+            document.getElementById("comados").value = imovel.comados;
+            document.getElementById("construcao_metragem").value = imovel.construcao;
+            document.getElementById("Terreno_metragem").value = imovel.terreno;
+            document.getElementById("whatsapp").value = imovel.whatsapp;
+        }
+
+        function excluir(indice){
+            if(confirm("Deseja excluir este imóvel?")){
+                imoveis.splice(indice,1);
+                localStorage.setItem("imoveis", JSON.stringify(imoveis));
+                mostrar();
+            }
+        }
+
+        iniciarTela();
+        mostrar();
+    </script>
+
+</body>
+</html>
